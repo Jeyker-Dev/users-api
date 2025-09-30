@@ -13,6 +13,7 @@ class UserController extends Controller
 {
     /**
      * Returns all users
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -23,8 +24,10 @@ class UserController extends Controller
 
     /**
      * Return an user by a specific id
+     * @param int $id
+     * @return JsonResponse
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         $user = User::findOrFail($id);
 
@@ -33,6 +36,8 @@ class UserController extends Controller
 
     /**
      * Create a new user
+     * @param Request $request
+     * @return JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -49,5 +54,30 @@ class UserController extends Controller
         ]);
 
         return response()->json(['message' => 'User created successfully.', 'user' => $user], 200);
+    }
+
+    /**
+     * Updates an user by an id
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+        return response()->json(['message' => 'User updated successfully.', 'User: ' => $user], 200);
     }
 }
