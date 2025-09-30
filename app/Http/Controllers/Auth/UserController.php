@@ -11,12 +11,29 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    /**
+     * Returns all users
+     */
+    public function index(): JsonResponse
     {
-        $token = $request->bearerToken();
-        return response()->json(['message' => 'Hellooo', 'token' => $token], 200);
+        $users = User::all();
+
+        return response()->json(['Users: ' => $users], 200);
     }
 
+    /**
+     * Return an user by a specific id
+     */
+    public function show(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        return response()->json(['User:' => $user], 200);
+    }
+
+    /**
+     * Create a new user
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -31,6 +48,6 @@ class UserController extends Controller
             'password' => $request->password,
         ]);
 
-        return response()->json(['message' => 'User created successfully.','user' => $user], 200);
+        return response()->json(['message' => 'User created successfully.', 'user' => $user], 200);
     }
 }
